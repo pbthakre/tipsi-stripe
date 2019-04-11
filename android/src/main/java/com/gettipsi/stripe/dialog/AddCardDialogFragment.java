@@ -4,10 +4,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -97,6 +99,11 @@ public class AddCardDialogFragment extends DialogFragment {
       CREATE_CARD_SOURCE = arguments.getBoolean(CREATE_CARD_SOURCE_KEY);
     }
   }
+  private boolean isNetworkConnected() {
+    ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+    return cm.getActiveNetworkInfo() != null;
+  }
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -132,11 +139,11 @@ public class AddCardDialogFragment extends DialogFragment {
 
   @Override
   public void onDismiss(DialogInterface dialog) {
-    if (!successful && promise != null) {
-      promise.reject(errorCode, errorDescription);
-      promise = null;
-    }
-    super.onDismiss(dialog);
+//    if (!successful && promise != null) {
+//      promise.reject(errorCode, errorDescription);
+//      promise = null;
+//    }
+//    super.onDismiss(dialog);
   }
 
   private void bindViews(final View view) {
@@ -221,7 +228,11 @@ public class AddCardDialogFragment extends DialogFragment {
             public void onError(Exception error) {
               doneButton.setEnabled(true);
               progressBar.setVisibility(View.GONE);
-              showToast(error.getLocalizedMessage());
+                if(isNetworkConnected()){
+                    showToast(error.getMessage());
+                }else{
+                    showToast("Please check your network connection.");
+                }
             }
           }
         );
@@ -242,7 +253,12 @@ public class AddCardDialogFragment extends DialogFragment {
             public void onError(Exception error) {
               doneButton.setEnabled(true);
               progressBar.setVisibility(View.GONE);
-              showToast(error.getLocalizedMessage());
+                Log.d("error:::", error.getMessage());
+                if(isNetworkConnected()){
+                  showToast(error.getLocalizedMessage());
+                }else{
+                  showToast("Please check your network connection.");
+                }
             }
           });
       }
@@ -253,7 +269,6 @@ public class AddCardDialogFragment extends DialogFragment {
       showToast(errorMessage);
     }
   }
-
   public void showToast(String message) {
     Context context = getActivity();
     if (context != null && !TextUtils.isEmpty(message)) {

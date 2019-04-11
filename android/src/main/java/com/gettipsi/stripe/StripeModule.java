@@ -200,7 +200,7 @@ public class StripeModule extends ReactContextBaseJavaModule {
       final AddCardDialogFragment cardDialog = AddCardDialogFragment.newInstance(
         mPublicKey,
         getErrorCode(mErrorCodes, "cancelled"),
-        getDescription(mErrorCodes, "cancelled"),
+         getDescription(mErrorCodes, "cancelled"),
         params.hasKey("createCardSource") && params.getBoolean("createCardSource")
       );
       cardDialog.setPromise(promise);
@@ -274,9 +274,6 @@ public class StripeModule extends ReactContextBaseJavaModule {
             options.getString("returnURL"),
             options.getString("card"));
         break;
-			case "card":
-				sourceParams = SourceParams.createCardParams(Converters.createCard(options));
-		  	break;
     }
 
     ArgCheck.nonNull(sourceParams);
